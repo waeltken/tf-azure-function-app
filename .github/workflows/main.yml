@@ -12,8 +12,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - run: az account show
+
+      - run: terraform init
+        working-directory: infra
+  
+      - id: plan
+        run: terraform plan -no-color
+        working-directory: infra
+
+      - run: echo ${{ steps.plan.outputs.stdout }}
+      - run: echo ${{ steps.plan.outputs.stderr }}
+      - run: echo ${{ steps.plan.outputs.exitcode }}
